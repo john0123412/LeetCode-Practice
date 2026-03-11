@@ -35,3 +35,24 @@ class Solution:
             if node.left:
                 stack.append(node.left)
         return res
+    
+#空指针标记法
+class Solution:
+    def preorderTraversal(self, root: Optional[TreeNode]) -> List[int]:
+        stack = []
+        res = []
+        if root:
+            stack.append(root)
+        while stack:
+            node = stack.pop()
+            if node:
+                if node.right:
+                    stack.append(node.right)
+                if node.left:
+                    stack.append(node.left)
+                stack.append(node)
+                stack.append(None) #空指针标记
+            else:
+                node = stack.pop()
+                res.append(node.val)
+        return res

@@ -32,3 +32,45 @@ class Solution:
                 res.append(cur.val)
                 cur = cur.right
         return res
+
+#空指针标记法
+class Solution:
+    def inorderTraversal(self, root: Optional[TreeNode]) -> List[int]:
+        stack = []
+        res = []
+        if root:
+            stack.append(root)
+        while stack:
+            node = stack.pop()
+            if node:
+                if node.right:
+                    stack.append(node.right)
+                stack.append(node)
+                stack.append(None) #空指针标记
+                if node.left:
+                    stack.append(node.left)
+            else:
+                node =stack.pop()
+                res.append(node.val)
+        return res
+    
+#升级：bollean标记法（超出内存限制，力扣）
+class Solution:
+    def inorderTraversal(self, root: Optional[TreeNode]) -> List[int]:
+        values = []
+        stack = [(root,False)] if root else []  # 多加一个参数，False 为默认值
+        while stack:
+            node, visited = stack.pop() # 多加一个 visited 参数，使“迭代统一写法”成为一件简单的事
+            if visited:             # visited 为 True，表示该节点和两个儿子的位次之前已经安排过了，现在可以收割节点了
+                values.append(node.val)
+ 
+            # visited 当前为 False, 表示初次访问本节点，此次访问的目的是“把自己和两个儿子在栈中安排好位次”。
+            # 中序遍历是'左中右'，右儿子最先入栈，最后出栈。
+            if node.right:
+                stack.append((node.right, False))
+            stack.append((node, True)) # 将当前节点重新入栈，并将 visited 设置为 True
+            if node.left:
+                stack.append((node.left, False))
+        return values
+        
+
