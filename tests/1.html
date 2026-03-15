@@ -1,0 +1,80 @@
+<div class="section">
+    <h2>在线聊天室 (Live Chat)</h2>
+    <div class="chat-container">
+        <div id="chat-box" class="chat-box"></div>
+        <div class="chat-input-area">
+            <input type="text" id="chat-msg" placeholder="输入消息..." onkeypress="if(event.keyCode==13) sendChat()">
+            <button onclick="sendChat()">发送</button>
+        </div>
+    </div>
+</div>
+
+<style>
+    /* 聊天室专属样式 */
+    .chat-box {
+        height: 250px;
+        border: 1px solid var(--border-color);
+        background: var(--bg-color);
+        border-radius: 8px;
+        padding: 10px;
+        overflow-y: auto;
+        margin-bottom: 10px;
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+    }
+    .chat-msg-item {
+        background: var(--card-bg);
+        padding: 6px 12px;
+        border-radius: 12px;
+        max-width: 85%;
+        align-self: flex-start;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        font-size: 0.9em;
+    }
+    .chat-input-area { display: flex; gap: 8px; }
+    .chat-input-area input { flex: 1; }
+    .chat-time { font-size: 0.75em; color: var(--text-sub); margin-left: 5px; }
+</style>
+
+<script>
+    // 聊天室逻辑
+    const CHAT_API = "https://go.junjohnny.me/api/chat";
+    let lastChatCount = 0;
+
+    async function fetchChat() {
+        try {
+            const res = await fetch(CHAT_API);
+            const messages = await res.json();
+            
+            // 优化：只有当有新消息时才刷新 DOM
+            if (messages.length !== lastChatCount) {
+                const box = document.getElementById('chat-box');
+                box.innerHTML = messages.map(m => `
+                    <div class="chat-msg-item">
+                        <b style="color:var(--accent-color)">${m.name}</b>: ${m.text}
+                        <span class="chat-time">${m.time}</span>
+                    </div>
+                `).join('');
+                box.scrollTop = box.scrollHeight; // 自动滚动到底部
+                lastChatCount = messages.length;
+            }
+        } catch (e) { console.error("聊天室连接失败"); }
+    }
+
+    async function sendChat() {
+        const name = document.getElementById('u-name').value; // 复用留言板的名字
+        const text = document.getElementById('chat-msg').value;
+        if(!name || !text) return alert("请先输入名字和内容");
+
+        await fetch(CHAT_API, {
+            method: 'POST',
+            body: JSON.stringify({ name, text })
+        });
+        document.getElementById('chat-msg').value = "";
+        fetchChat();
+    }
+
+    // 设置定时器：每 3 秒刷新一次聊天记录（短轮询）
+    setInterval(fetchChat, 3000);
+</script>
