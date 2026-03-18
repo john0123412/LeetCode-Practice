@@ -48,7 +48,7 @@ class Solution:
         return self.uniquePaths(m - 1, n) + self.uniquePaths(m, n - 1)
 
 
-#数论方法
+#数论方法（算组合数）
 class Solution:
     def uniquePaths(self, m: int, n: int) -> int:
         numerator = 1  # 分子
