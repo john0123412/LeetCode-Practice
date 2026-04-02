@@ -15,9 +15,13 @@ def solve():
         print(0)
         return
     cnt = 0
-    for i in range(len(s) - 2):
+    i = 0
+    while i < len(s) - 2:
         if sorted(s[i:i+3]) ==['b', 'l', 'q']:
             cnt += 1
+            i += 3
+        else:
+            i += 1
     print(cnt)
 
 if __name__ == "__main__":
